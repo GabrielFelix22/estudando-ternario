@@ -17,6 +17,7 @@ function App() {
   const usuario = {
     nome: 'Gabriel Felix',
     ativo: true,
+    online: true,
   };
 
   const hora = new Date().getHours();
@@ -26,7 +27,9 @@ function App() {
       <div className="flex flex-col gap-4 border border-gray-700 py-10 px-20 rounded-2xl shadow-md shadow-blue-500/80">
         <h1 className="text-3xl font-bold">Estudando Ternários</h1>
         <p>{`${hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'}, ${usuario.nome}!`}</p>
-        <p className="text-2xl">
+        <p
+          className={`font-medium text-lg ${usuario.online ? 'text-green-500' : 'text-red-500'}`}
+        >
           {usuario.nome}: {usuario.ativo ? '✅' : '❌'}
         </p>
 
