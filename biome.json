@@ -1,12 +1,11 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
-	"vcs": {
+  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+  "vcs": {
     "enabled": false,
     "clientKind": "git",
     "useIgnoreFile": false
   },
-  "files": {
-  },
+  "files": {},
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -21,7 +20,7 @@
   "javascript": {
     "formatter": {
       "enabled": true,
-      "quoteStyle": "double",
+      "quoteStyle": "single",
       "bracketSpacing": true,
       "lineWidth": 80
     }
