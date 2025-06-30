@@ -20,7 +20,7 @@ function App() {
 	};
 
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-900 text-white">
+		<div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-900 text-white container-app">
 			<div className="flex flex-col gap-4 border border-gray-700 py-10 px-20 rounded-2xl shadow-md shadow-blue-500/80">
 				<h1 className="text-3xl font-bold">Estudando Ternários</h1>
 				<p className="text-2xl">
