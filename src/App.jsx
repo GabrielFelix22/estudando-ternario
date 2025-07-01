@@ -1,5 +1,7 @@
 import './App.css';
 import {
+  CloudMoon,
+  CloudSun,
   Plus,
   ToggleLeft,
   ToggleRight,
@@ -65,10 +67,13 @@ function App() {
             Funcionários <span className="text-blue-500">Ternários.</span>
           </div>
         </h1>
-        <p>
-          {`${hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'}, ${usuario.nome}!`}{' '}
-          • {emoji}
-        </p>
+        <div className="flex items-center gap-2">
+          <CloudSun className="w-8 h-8" />
+          <p className="text-lg mt-1">
+            {`${hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'}, ${usuario.nome}!`}{' '}
+            • {emoji}
+          </p>
+        </div>
         <div
           className={`font-medium text-lg ${usuario.online ? 'text-green-500' : 'text-red-500'}`}
         >
