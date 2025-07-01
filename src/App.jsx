@@ -20,12 +20,19 @@ function App() {
     online: true,
   };
 
+  const admin = {
+    nome: 'Administrador',
+    permissao: 'user',
+  };
+
   const hora = new Date().getHours();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-900 text-white container-app">
-      <div className="flex flex-col gap-4 border border-gray-700 py-10 px-20 rounded-2xl shadow-md shadow-blue-500/80">
-        <h1 className="text-3xl font-bold">Estudando Ternários</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-900 text-white container-app p-4">
+      <div className="flex flex-col gap-4 border border-gray-700 py-2 px-20 rounded-2xl shadow-md shadow-blue-500/80">
+        <h1 className="text-3xl font-bold mt-2">
+          Estudando <span className="text-blue-500">Ternários.</span>
+        </h1>
         <p>{`${hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'}, ${usuario.nome}!`}</p>
         <p
           className={`font-medium text-lg ${usuario.online ? 'text-green-500' : 'text-red-500'}`}
@@ -37,7 +44,7 @@ function App() {
           {funcionarios.map((funcionario) => (
             <li
               key={funcionario.nome}
-              className="flex justify-between w-full gap-1"
+              className="flex justify-between w-full gap-1 border-b border-gray-700 py-2 px-4"
             >
               {`${funcionario.nome}:`}
               <span
@@ -57,6 +64,20 @@ function App() {
             className="mx-auto block w-50 mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
           >
             {seguindo ? 'Deixar de seguir' : 'Seguir'}
+          </button>
+
+          <button
+            type="button"
+            className={`
+              mx-auto block w-50 mt-2 border border-blue-500 text-white font-bold py-2 px-4 rounded-full
+              ${
+                admin.permissao === 'admin'
+                  ? 'hover:bg-blue-400/30 cursor-pointer'
+                  : 'cursor-not-allowed'
+              }
+            `}
+          >
+            {admin.permissao === 'admin' ? 'Acessar Painel' : 'Acesso Restrito'}
           </button>
         </ul>
       </div>
