@@ -1,3 +1,58 @@
 .container-app {
   font-family: "Roboto", sans-serif;
 }
+
+/* Para navegadores baseados em WebKit (Chrome, Safari, Edge, Opera) */
+/* Estiliza o track (a trilha onde o scroll se move) */
+::-webkit-scrollbar {
+  width: 12px; /* Largura da barra de rolagem vertical */
+  height: 12px; /* Altura da barra de rolagem horizontal (se aplicável) */
+}
+
+/* Estiliza o thumb (o "puxador" da barra de rolagem) */
+::-webkit-scrollbar-thumb {
+  background-color: #4a90e2; /* Cor azul do thumb (você pode usar a cor do seu tema) */
+  border-radius: 5px; /* Borda arredondada do thumb */
+  border: 2px solid transparent; /* Garante que o thumb tenha um pequeno espaçamento do track se o track tiver cor */
+  background-clip: padding-box; /* O padding-box faz com que a borda seja incluída no tamanho do thumb */
+}
+
+/* Estiliza o thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6aabf7; /* Cor do thumb ao passar o mouse */
+}
+
+/* Estiliza o track (a área vazia) */
+::-webkit-scrollbar-track {
+  background: #2d3748; /* Cor de fundo do track (um cinza escuro para combinar com o fundo do seu app) */
+  border-radius: 10px; /* Borda arredondada do track */
+}
+
+/* Opcional: Estiliza os cantos da barra de rolagem onde as duas barras se encontram */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.custom-list-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.custom-list-scroll::-webkit-scrollbar-thumb {
+  background-color: #4a90e2;
+  border-radius: 5px;
+}
+.custom-list-scroll::-webkit-scrollbar-track {
+  background: #2d3748;
+}
+
+/* Para Firefox (mais limitado) */
+/* Note: As opções para Firefox são menos robustas que WebKit */
+.your-scrolling-element {
+  /* Use uma classe específica para o seu elemento com scroll */
+  scrollbar-width: thin; /* 'auto' ou 'thin' */
+  scrollbar-color: #4a90e2 #2d3748; /* thumb color track color */
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin; /* 'auto' ou 'thin' */
+  scrollbar-color: #4a90e2 #2d3748; /* Cor do thumb, Cor do track */
+}
