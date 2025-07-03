@@ -10,6 +10,7 @@ import {
   TvMinimal,
   User,
   UserPen,
+  X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -22,20 +23,19 @@ function App() {
   const [novoNome, setNovoNome] = useState('');
   const [novoTipo, setNovoTipo] = useState('CLT');
   const [funcionarios, setFuncionarios] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar a visibilidade do modal
+  const [funcionarioEditando, setFuncionarioEditando] = useState(null); // Estado para armazenar o funcionário sendo editado
+  const [nomeEditado, setNomeEditado] = useState(''); // Estado para o nome no formulário de edição
+  const [tipoEditado, setTipoEditado] = useState(''); // Estado para o tipo no formulário de edição
+  const [erroEdicaoNome, setErroEdicaoNome] = useState('');
 
   // Função para buscar os funcionários
   const fetchFuncionarios = async () => {
-    // const funcionariosSalvos = localStorage.getItem('funcionarios');
-    // if (!funcionariosSalvos) {
-    //   setFuncionarios(JSON.parse(funcionariosSalvos));
-    //   localStorage.setItem('funcionarios', JSON.stringify(funcionariosSalvos));
-    // } else {
-
-    // }
     try {
-      const response = await axios.get('http://localhost:3000/funcionarios');
+      const response = await axios.get(
+        'http://localhost:3000/api/funcionarios',
+      );
       setFuncionarios(response.data);
-      // localStorage.setItem('funcionarios', JSON.stringify(response.data));
     } catch (error) {
       console.error('Erro ao buscar funcionários', error);
       toast.error('Erro ao buscar funcionários', {
@@ -55,10 +55,6 @@ function App() {
     fetchFuncionarios();
   }, []);
 
-  // useEffect(() => {
-  //   localStorage.setItem('funcionarios', JSON.stringify(funcionarios));
-  // }, [funcionarios]);
-
   // Função para adicionar um novo funcionário
   const handleAdicionar = async () => {
     if (!novoNome.trim()) {
@@ -67,18 +63,33 @@ function App() {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/funcionarios', {
-        nome: novoNome,
-        tipo: novoTipo,
+      const response = await axios.post(
+        'http://localhost:3000/api/funcionarios',
+        {
+          nome: novoNome,
+          tipo: novoTipo,
+        },
+      );
+      toast.success('Funcionário adicionado com sucesso!', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
       });
-      setFuncionarios((prev) => [...prev, response.data]);
+      await fetchFuncionarios();
+
+      // setFuncionarios((prev) => [...prev, response.data]);
       setNovoNome('');
       setNovoTipo('CLT');
     } catch (error) {
       console.error('Erro ao adicionar funcionário', error);
       toast.error('Erro ao adicionar funcionário', {
         position: 'top-right',
-        autoClose: 5000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -98,9 +109,15 @@ function App() {
 
       if (!confirmacao) return;
 
-      await axios.delete(`http://localhost:3000/funcionarios/${usuario.id}`);
+      await axios.delete(
+        `http://localhost:3000/api/funcionarios/${usuario.id_funcionario}`,
+      );
 
-      setFuncionarios(funcionarios.filter((func) => func.id !== usuario.id));
+      setFuncionarios(
+        funcionarios.filter(
+          (func) => func.id_funcionario !== usuario.id_funcionario,
+        ),
+      );
       toast.success('Funcionário removido com sucesso!', {
         position: 'top-right',
         autoClose: 3000,
@@ -124,6 +141,78 @@ function App() {
         theme: 'dark',
       });
     }
+  };
+
+  // Função para salvar as edições de um funcionário
+  const handleSalvarEdicao = async () => {
+    if (!nomeEditado.trim()) {
+      setErroEdicaoNome('O nome é obrigatório');
+      return;
+    }
+
+    try {
+      if (!funcionarioEditando || !funcionarioEditando.id_funcionario) {
+        toast.error('Funcionário não encontrado', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'dark',
+        });
+        console.error('Funcionário não encontrado');
+        return;
+      }
+
+      await axios.put(
+        `http://localhost:3000/api/funcionarios/${funcionarioEditando.id_funcionario}`,
+        {
+          nome: nomeEditado,
+          tipo: tipoEditado,
+        },
+      );
+      toast.success('Funcionário editado com sucesso!', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+      await fetchFuncionarios();
+      handleCloseEditModal();
+    } catch (error) {
+      console.error('Erro ao editar funcionário', error);
+      toast.error('Erro ao editar funcionário', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    }
+  };
+
+  // Função para abrir o modal de edição
+  const handleOpenEditModal = (funcionario) => {
+    setFuncionarioEditando(funcionario);
+    setNomeEditado(funcionario.nome);
+    setTipoEditado(funcionario.tipo);
+    setIsModalOpen(true);
+  };
+
+  // Função para fechar o modal de edição
+  const handleCloseEditModal = () => {
+    setIsModalOpen(false);
+    setFuncionarioEditando(null);
+    setErroEdicaoNome('');
   };
 
   const usuario = {
@@ -217,20 +306,17 @@ function App() {
         </div>
         {/* Mensagem de erro abaixo do input */}
         {erroNome && (
-          <p className="text-red-500 text-sm ml-2 mt-[-26px]">{erroNome}</p>
+          <p className="flex items-center mr-60 text-red-500 text-sm mt-[-26px]">
+            {erroNome}
+          </p>
         )}
-        <h1 className="text-2xl text-center">
-          <span className="text-white-500">
-            {funcionarios <= 0 ? 'Não há funcionários cadastrados' : ''}
-          </span>
-        </h1>
         {isLoading ? (
           <p className="text-lg text-white">Carregando funcionarios...</p>
-        ) : (
+        ) : Array.isArray(funcionarios) && funcionarios.length > 0 ? (
           <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 divide-y divide-x divide-gray-700 mt-4 text-lg custom-list-scroll pr-2">
             {funcionarios.map((funcionario) => (
               <li
-                key={funcionario.nome}
+                key={funcionario.id_funcionario}
                 className="flex items-center justify-between w-full py-2 px-2 border-b border-gray-700 rounded-lg"
               >
                 {/* LADO ESQUERDO: Ícone, Nome e Tipo */}
@@ -265,7 +351,10 @@ function App() {
                 <div className="flex items-center gap-2 ml-auto pl-10">
                   {' '}
                   {/* Ícones de ação */}
-                  <UserPen className="w-6 h-6 text-blue-200 hover:text-blue-300 cursor-pointer" />
+                  <UserPen
+                    className="w-6 h-6 text-blue-200 hover:text-blue-300 cursor-pointer"
+                    onClick={() => handleOpenEditModal(funcionario)}
+                  />
                   <Trash2
                     className="w-6 h-6 text-red-500 hover:text-red-700 cursor-pointer"
                     onClick={() => handleRemover(funcionario)}
@@ -274,7 +363,14 @@ function App() {
               </li>
             ))}
           </ul>
+        ) : (
+          <h1 className="text-2xl text-center">
+            <span className="text-white-500">
+              Não há funcionários cadastrados ou erro ao carregar.
+            </span>
+          </h1>
         )}
+
         <div className="flex items-center justify-center mt-10 gap-4">
           <button
             type="button"
@@ -300,6 +396,84 @@ function App() {
         </div>
       </div>
       <ToastContainer />
+
+      {/* Modal de Edição */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-900/80 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md relative">
+            <button
+              onClick={handleCloseEditModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors duration-200"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-center text-white">
+              Editar Funcionário
+            </h2>
+            <div className="mb-4">
+              <label
+                htmlFor="nomeEditado"
+                className="block text-gray-300 text-sm font-bold mb-2"
+              >
+                Nome:
+              </label>
+              <input
+                type="text"
+                id="nomeEditado"
+                value={nomeEditado}
+                onChange={(e) => {
+                  setNomeEditado(e.target.value);
+                  setErroEdicaoNome('');
+                }}
+                className="shadow appearance-none border border-gray-700 rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700"
+              />
+              {erroEdicaoNome && (
+                <p className="text-red-500 text-xs italic mt-2">
+                  {erroEdicaoNome}
+                </p>
+              )}
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="tipoEditado"
+                className="block text-gray-300 text-sm font-bold mb-2"
+              >
+                Tipo:
+              </label>
+              <select
+                id="tipoEditado"
+                value={tipoEditado}
+                onChange={(e) => setTipoEditado(e.target.value)}
+                className="shadow border border-gray-700 rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700"
+              >
+                <option value="CLT" className="bg-gray-900 text-white">
+                  CLT
+                </option>
+                <option value="PJ" className="bg-gray-900 text-white">
+                  PJ
+                </option>
+                <option value="Terceirizado" className="bg-gray-900 text-white">
+                  Terceirizado
+                </option>
+              </select>
+            </div>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleCloseEditModal}
+                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSalvarEdicao}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
+              >
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
