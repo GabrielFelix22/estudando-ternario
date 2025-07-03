@@ -61,7 +61,7 @@ app.put("/api/funcionarios/:funcionarioId", (req, res) => {
 		return res.status(400).json({ error: "Nome e tipo são obrigatórios" });
 	}
 
-	const query = `UPDATE funcionario SET nome = ?, tipo = ? WHERE id_funcionario = ?`;
+	const query = `UPDATE funcionario SET nome = ?, tipo = ?, alterado = NOW() WHERE id_funcionario = ?`;
 
 	db.query(query, [nome, tipo, id], (err, results) => {
 		if (err) {
@@ -80,22 +80,30 @@ app.put("/api/funcionarios/:funcionarioId", (req, res) => {
 // --- Rota para remover um funcionário ---
 app.delete("/api/funcionarios/:funcionarioId", (req, res) => {
 	const id = parseInt(req.params.funcionarioId);
-	const index = funcionarios.findIndex((funcionario) => funcionario.id === id);
-	if (index === -1) {
-		return res.status(404).json({ error: "Funcionário não encontrado" });
-	}
-	funcionarios.splice(index, 1);
-	res.status(200).json({ message: "Funcionário removido com sucesso" });
+	const query = `UPDATE funcionario SET excluido = NOW() WHERE id_funcionario = ?`;
+
+	db.query(query, [id], (err, results) => {
+		if (err) {
+			console.error("Erro ao remover funcionário", err);
+			return res.status(500).json({ error: "Erro ao remover funcionário" });
+		}
+
+		if (results.affectedRows === 0) {
+			return res.status(404).json({ error: "Funcionário nao encontrado" });
+		}
+
+		res.status(200).json({ message: "Funcionario removido com sucesso" });
+	});
 });
 
 // --- Rotas para o Front-end (SPA) build ---
 
 // --- Servir Arquivos Estáticos do Front-end ---
-app.use(express.static(path.join(__dirname, "frontend-build", "dist")));
+app.use(express.static(path.join(__dirname, "/", "dist")));
 
 // --- Rota "Catch-all" para o Front-end (SPA) ---
 app.get("*", (_req, res) => {
-	res.sendFile(path.join(__dirname, "frontend-build", "dist", "index.html"));
+	res.sendFile(path.join(__dirname, "/", "dist", "index.html"));
 });
 
 // --- Inicialização do Servidor ---
