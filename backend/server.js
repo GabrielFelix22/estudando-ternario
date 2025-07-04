@@ -99,11 +99,11 @@ app.delete('/api/funcionarios/:funcionarioId', (req, res) => {
 // --- Rotas para o Front-end (SPA) build ---
 
 // --- Servir Arquivos Estáticos do Front-end ---
-app.use(express.static(path.join(__dirname, '/', 'public')));
+app.use('/estudando', express.static(path.join(__dirname, 'dist')));
 
 // --- Rota "Catch-all" para o Front-end (SPA) ---
-app.get('*', (_req, res) => {
-  res.sendFile(path.join(__dirname, '/', 'dist', 'index.html'));
+app.get('/estudando/*', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // --- Inicialização do Servidor ---
