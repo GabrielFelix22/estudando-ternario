@@ -331,13 +331,16 @@ function App() {
                     {/* Nome em negrito para destaque */}
                   </div>
                   <span
-                    className={`ml-10 text-sm ${
-                      funcionario.tipo === 'CLT'
-                        ? 'text-green-500'
-                        : funcionario.tipo === 'PJ'
-                          ? 'text-sky-300'
-                          : 'text-purple-500'
-                    }
+                    className={`
+              ml-10 /* Alinha o tipo abaixo do nome, ajustando a margem */
+              text-sm /* Fonte menor para o tipo */
+              ${
+                funcionario.tipo === 'CLT'
+                  ? 'text-green-500'
+                  : funcionario.tipo === 'PJ'
+                    ? 'text-sky-300'
+                    : 'text-purple-500'
+              }
             `}
                   >
                     {funcionario.tipo}
